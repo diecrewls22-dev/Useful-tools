@@ -1,1 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contributions - Useful Tools Website</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="nav-logo">🛠️ Useful Tools</h1>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="morse-code.html" class="nav-link">Morse Code</a></li>
+                <li><a href="base64-decoder.html" class="nav-link">Base64 Decoder</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+                <li><a href="contributions.html" class="nav-link active">Contributions</a></li>
+            </ul>
+        </div>
+    </nav>
 
+    <main class="main-content">
+        <div class="tool-container">
+            <h1 class="tool-title">🤝 Contributions</h1>
+            <p style="text-align: center; margin-bottom: 2rem; font-size: 1.1rem; color: #666;">
+                Help us improve and expand the Useful Tools Website
+            </p>
+
+            <div class="contribution-section">
+                <div class="contribution-method">
+                    <div class="method-icon">🔀</div>
+                    <div class="method-content">
+                        <h3>GitHub Pull Requests</h3>
+                        <p>Contribute directly to our codebase by creating pull requests on GitHub. This is the best way to add new features, fix bugs, or improve existing tools.</p>
+                        <div class="method-steps">
+                            <h4>How to contribute via GitHub:</h4>
+                            <ol>
+                                <li>Fork our repository on GitHub</li>
+                                <li>Create a new branch for your feature or fix</li>
+                                <li>Make your changes and test them</li>
+                                <li>Submit a pull request with a clear description</li>
+                                <li>We'll review and merge your contribution</li>
+                            </ol>
+                        </div>
+                        <a href="https://github.com/yourusername/useful-tools-website" target="_blank" class="btn contribution-btn">
+                            Visit GitHub Repository
+                        </a>
+                    </div>
+                </div>
+
+                <div class="contribution-method">
+                    <div class="method-icon">💬</div>
+                    <div class="method-content">
+                        <h3>Reddit Discussions</h3>
+                        <p>Share your ideas, suggestions, and feedback on our Reddit community. This is great for feature requests, bug reports, and general discussions.</p>
+                        <div class="method-steps">
+                            <h4>How to contribute via Reddit:</h4>
+                            <ol>
+                                <li>Join our subreddit community</li>
+                                <li>Create a post with your suggestion or issue</li>
+                                <li>Engage with other community members</li>
+                                <li>Vote on feature requests you'd like to see</li>
+                                <li>Help other users with their questions</li>
+                            </ol>
+                        </div>
+                        <a href="https://www.reddit.com/r/CrewStudios/" target="_blank" class="btn contribution-btn">
+                            Join Reddit Community
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contribution-ideas">
+                <h3>💡 Areas Where You Can Help</h3>
+                <div class="ideas-grid">
+                    <div class="idea-card">
+                        <h4>🛠️ New Tools</h4>
+                        <p>Suggest or build new useful tools like JSON formatters, color pickers, unit converters, etc.</p>
+                    </div>
+                    <div class="idea-card">
+                        <h4>🎨 UI/UX Improvements</h4>
+                        <p>Help improve the design, responsiveness, and user experience of our tools.</p>
+                    </div>
+                    <div class="idea-card">
+                        <h4>🐛 Bug Fixes</h4>
+                        <p>Identify and fix any issues or bugs in existing tools.</p>
+                    </div>
+                    <div class="idea-card">
+                        <h4>📚 Documentation</h4>
+                        <p>Improve documentation, add tool explanations, or create usage guides.</p>
+                    </div>
+                    <div class="idea-card">
+                        <h4>🔧 Performance</h4>
+                        <p>Optimize code for better performance and faster loading times.</p>
+                    </div>
+                    <div class="idea-card">
+                        <h4>🌐 Translations</h4>
+                        <p>Help translate the website and tools into other languages.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="guidelines-box">
+                <h3>📋 Contribution Guidelines</h3>
+                <div class="guidelines-content">
+                    <div class="guideline-item">
+                        <h4>✅ Do:</h4>
+                        <ul>
+                            <li>Test your changes thoroughly</li>
+                            <li>Follow existing code style and patterns</li>
+                            <li>Write clear commit messages</li>
+                            <li>Be respectful in discussions</li>
+                            <li>Provide detailed descriptions in PRs</li>
+                        </ul>
+                    </div>
+                    <div class="guideline-item">
+                        <h4>❌ Don't:</h4>
+                        <ul>
+                            <li>Submit broken or untested code</li>
+                            <li>Include sensitive information</li>
+                            <li>Be disrespectful to other contributors</li>
+                            <li>Make drastic changes without discussion</li>
+                            <li>Submit spam or irrelevant content</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h4>🎉 Recognition</h4>
+                <p>All valuable contributions will be recognized in our:</p>
+                <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                    <li>GitHub contributors list</li>
+                    <li>Project documentation</li>
+                    <li>Reddit community announcements</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Chat Bot -->
+    <div id="chatToggle" class="chat-toggle" title="Chat with us">
+        <span>💬</span>
+    </div>
+
+    <div id="chatWidget" class="chat-widget hidden">
+        <div class="chat-header">
+            <span>🛠️ Useful Tools Assistant</span>
+            <button id="closeChat" class="close-btn">×</button>
+        </div>
+        <div id="chatbox" class="chatbox">
+            <div class="bot-msg">
+                Hello! I'm your Useful Tools assistant. I can help you with Morse code, Base64 decoding, contact info, and more! How can I help you today?
+            </div>
+        </div>
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Ask about our tools..." maxlength="500">
+            <button id="sendBtn" class="send-btn">Send</button>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+    <script>
+        // Add contributions-specific chat responses
+        const originalSendMessage = window.sendMessage;
+        window.sendMessage = function() {
+            const message = document.getElementById('userInput').value.trim().toLowerCase();
+            
+            // If user asks about contributions in chat, provide quick response
+            if (message.includes('contribut') || message.includes('github') || message.includes('pull request') || message.includes('reddit')) {
+                const chatbox = document.getElementById('chatbox');
+                const typingIndicator = document.querySelector('.typing');
+                
+                if (typingIndicator) {
+                    chatbox.removeChild(typingIndicator);
+                }
+                
+                displayMessage("We'd love your contributions! You can help us by:\n• Making Pull Requests on GitHub\n• Starting discussions on our Reddit page\n• Suggesting new tools or improvements\n• Reporting bugs and issues\n\nCheck the Contributions page for detailed guidelines!", 'bot-msg');
+                document.getElementById('userInput').value = '';
+                return;
+            }
+            
+            originalSendMessage();
+        };
+
+        // Update GitHub URL with actual repository
+        document.addEventListener('DOMContentLoaded', function() {
+            const githubBtn = document.querySelector('.contribution-btn');
+            // You'll need to update this with your actual GitHub repository URL
+            githubBtn.href = 'https://github.com/yourusername/useful-tools-website';
+        });
+    </script>
+
+    <style>
+        .contribution-section {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+            margin: 3rem 0;
+        }
+
+        .contribution-method {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #007c91;
+        }
+
+        .method-icon {
+            font-size: 3rem;
+            flex-shrink: 0;
+        }
+
+        .method-content {
+            flex: 1;
+        }
+
+        .method-content h3 {
+            color: #007c91;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .method-content p {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .method-steps {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+        }
+
+        .method-steps h4 {
+            color: #004d40;
+            margin-bottom: 1rem;
+        }
+
+        .method-steps ol {
+            margin-left: 1.5rem;
+            color: #555;
+        }
+
+        .method-steps li {
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .contribution-btn {
+            margin-top: 1rem;
+        }
+
+        .contribution-ideas {
+            margin: 4rem 0;
+        }
+
+        .contribution-ideas h3 {
+            text-align: center;
+            color: #007c91;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+        }
+
+        .ideas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .idea-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+            border-top: 4px solid #007c91;
+        }
+
+        .idea-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .idea-card h4 {
+            color: #007c91;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .idea-card p {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .guidelines-box {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin: 3rem 0;
+        }
+
+        .guidelines-box h3 {
+            color: #007c91;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+        }
+
+        .guidelines-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .guideline-item h4 {
+            color: #004d40;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .guideline-item ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .guideline-item li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f0f0f0;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .guideline-item li:before {
+            content: '•';
+            color: #007c91;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        @media (max-width: 768px) {
+            .contribution-method {
+                flex-direction: column;
+                text-align: center;
+                padding: 2rem;
+            }
+            
+            .guidelines-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .ideas-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>
