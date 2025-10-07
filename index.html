@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Useful Tools Website</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="nav-logo">🛠️ Useful Tools</h1>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link active">Home</a></li>
+                <li><a href="morse-code.html" class="nav-link">Morse Code</a></li>
+                <li><a href="base64-decoder.html" class="nav-link">Base64 Decoder</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+                <li><a href="contributions.html" class="nav-link">Contributions</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <section class="hero">
+            <h2>Welcome to Useful Tools Website!</h2>
+            <p>Your one-stop destination for handy online tools and utilities.</p>
+        </section>
+
+        <section class="tools-grid">
+            <div class="tool-card">
+                <h3>🔤 Morse Code Encoder/Decoder</h3>
+                <p>Convert text to Morse code and decode Morse code back to text.</p>
+                <a href="morse-code.html" class="btn">Use Tool</a>
+            </div>
+
+            <div class="tool-card">
+                <h3>🔐 Base64 Decoder</h3>
+                <p>Decode Base64 encoded strings securely in your browser.</p>
+                <a href="base64-decoder.html" class="btn">Use Tool</a>
+            </div>
+
+            <div class="tool-card">
+                <h3>📞 Contact Us</h3>
+                <p>Get in touch with us through various platforms.</p>
+                <a href="contact.html" class="btn">Contact</a>
+            </div>
+
+            <div class="tool-card">
+                <h3>🤝 Contribute</h3>
+                <p>Help us improve by contributing to our project.</p>
+                <a href="contributions.html" class="btn">Contribute</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Floating Chat Bot -->
+    <div id="chatToggle" class="chat-toggle" title="Chat with us">
+        <span>💬</span>
+    </div>
+
+    <div id="chatWidget" class="chat-widget hidden">
+        <div class="chat-header">
+            <span>🛠️ Useful Tools Assistant</span>
+            <button id="closeChat" class="close-btn">×</button>
+        </div>
+        <div id="chatbox" class="chatbox">
+            <div class="bot-msg">
+                Hello! I'm your Useful Tools assistant. I can help you with Morse code, Base64 decoding, contact info, and more! How can I help you today?
+            </div>
+        </div>
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Ask about our tools..." maxlength="500">
+            <button id="sendBtn" class="send-btn">Send</button>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
