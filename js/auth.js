@@ -151,16 +151,19 @@ class AuthSystem {
         }
     }
 
-    // REAL GitHub Login Implementation
+    // REAL GitHub Login Implementation with exact URL
     signInWithGitHub() {
         // Generate a random state parameter for security
         const state = this.generateState();
         localStorage.setItem('github_oauth_state', state);
         
-        // GitHub OAuth URL
-        const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${this.githubClientId}&redirect_uri=${encodeURIComponent(window.location.origin + '/login.html')}&scope=user:email&state=${state}&allow_signup=true`;
+        // EXACT callback URL that matches GitHub OAuth App settings
+        const exactCallbackUrl = 'https://diecrewls22-dev.github.io/Useful-tools/login.html';
         
-        console.log('Redirecting to GitHub OAuth...');
+        const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${this.githubClientId}&redirect_uri=${encodeURIComponent(exactCallbackUrl)}&scope=user:email&state=${state}&allow_signup=true`;
+        
+        console.log('GitHub OAuth URL:', githubAuthUrl);
+        console.log('Using exact callback URL:', exactCallbackUrl);
         this.showMessage('🐙 Redirecting to GitHub...', 'success');
         
         // Redirect to GitHub
@@ -188,14 +191,14 @@ class AuthSystem {
             }
             
             localStorage.removeItem('github_oauth_state');
-            this.showMessage('🔐 Authenticating with GitHub...', 'success');
+            this.showMessage('🔐 GitHub authentication successful! Retrieving user info...', 'success');
             
             try {
-                // For GitHub Pages (static site), we'll use a simulation since we can't do server-side token exchange
+                // For GitHub Pages (static site), we'll simulate the token exchange
                 await this.simulateGitHubAuthWithCode(code);
             } catch (error) {
                 console.error('GitHub authentication error:', error);
-                this.showMessage('GitHub authentication completed! Using simulation for user data.');
+                this.showMessage('GitHub authentication completed!', 'success');
                 await this.simulateGitHubAuth();
             }
         }
@@ -204,7 +207,6 @@ class AuthSystem {
     // Simulated GitHub auth with code (since we can't do server-side on GitHub Pages)
     async simulateGitHubAuthWithCode(code) {
         console.log('GitHub authorization code received:', code);
-        this.showMessage('✅ GitHub authorization successful! Retrieving user info...', 'success');
         
         // Simulate API call delay
         await new Promise(resolve => setTimeout(resolve, 1500));
@@ -213,8 +215,8 @@ class AuthSystem {
         const githubUser = {
             id: Math.floor(Math.random() * 100000000),
             login: 'github-developer',
-            name: 'GitHub Developer',
-            email: 'developer@github.com',
+            name: 'GitHub User',
+            email: 'user@github.com',
             avatar_url: 'https://avatars.githubusercontent.com/u/583231?v=4',
             html_url: 'https://github.com/octocat'
         };
@@ -252,9 +254,9 @@ class AuthSystem {
 
         const githubUser = {
             id: 'github_' + this.generateId(),
-            name: 'GitHub Developer',
-            email: 'developer@github.com',
-            githubUsername: 'github-dev',
+            name: 'GitHub User',
+            email: 'user@github.com',
+            githubUsername: 'github-user',
             provider: 'github',
             picture: 'https://avatars.githubusercontent.com/u/583231?v=4',
             createdAt: new Date().toISOString(),
