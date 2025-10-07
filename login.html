@@ -171,6 +171,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 600;
+            min-height: 54px;
         }
 
         .social-btn:hover {
@@ -246,6 +247,25 @@
             text-decoration: none;
             font-weight: 500;
         }
+
+        /* Google button container styling */
+        .google-auth-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #db4437 !important;
+            border-radius: 10px;
+            min-height: 54px;
+            background: white;
+        }
+
+        /* GitHub button specific styling */
+        .github-auth-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -286,17 +306,21 @@
                 </div>
 
                 <div class="social-buttons">
-                    <button type="button" class="social-btn google" onclick="signInWithGoogle()">
-                        <span class="social-icon">🔍</span>
-                        Continue with Google
+                    <!-- Google Button (will be rendered by JavaScript) -->
+                    <div class="social-btn google google-auth-button" id="googleSignInButton">
+                        <!-- Google button will be automatically rendered here -->
+                    </div>
+                    
+                    <!-- GitHub Button -->
+                    <button type="button" class="social-btn github github-auth-button" onclick="signInWithGitHub()">
+                        <span class="social-icon">🐙</span>
+                        Continue with GitHub
                     </button>
+                    
+                    <!-- Microsoft Button -->
                     <button type="button" class="social-btn microsoft" onclick="signInWithMicrosoft()">
                         <span class="social-icon">Ⓜ️</span>
                         Continue with Microsoft
-                    </button>
-                    <button type="button" class="social-btn github" onclick="signInWithGitHub()">
-                        <span class="social-icon">🐙</span>
-                        Continue with GitHub
                     </button>
                 </div>
             </form>
@@ -332,10 +356,18 @@
                 </div>
 
                 <div class="social-buttons">
-                    <button type="button" class="social-btn google" onclick="signUpWithGoogle()">
-                        <span class="social-icon">🔍</span>
-                        Sign up with Google
+                    <!-- Google Button for Sign Up -->
+                    <div class="social-btn google google-auth-button" id="googleSignUpButton">
+                        <!-- Google button will be automatically rendered here -->
+                    </div>
+                    
+                    <!-- GitHub Button for Sign Up -->
+                    <button type="button" class="social-btn github github-auth-button" onclick="signUpWithGitHub()">
+                        <span class="social-icon">🐙</span>
+                        Sign up with GitHub
                     </button>
+                    
+                    <!-- Microsoft Button for Sign Up -->
                     <button type="button" class="social-btn microsoft" onclick="signUpWithMicrosoft()">
                         <span class="social-icon">Ⓜ️</span>
                         Sign up with Microsoft
@@ -432,11 +464,40 @@
             }
         }
 
-        // Check if user is already logged in
+        function signUpWithGitHub() {
+            // For GitHub, sign up is the same as sign in
+            if (window.authSystem) {
+                window.authSystem.signInWithGitHub();
+            }
+        }
+
+        // Check if user is already logged in (but allow GitHub callback)
         document.addEventListener('DOMContentLoaded', function() {
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            if (currentUser) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const hasGitHubCode = urlParams.get('code');
+            
+            // Only redirect if user is logged in AND there's no GitHub OAuth callback
+            if (currentUser && !hasGitHubCode) {
                 window.location.href = 'index.html';
+            }
+            
+            // Initialize social buttons after a delay to ensure auth.js is loaded
+            setTimeout(() => {
+                if (window.authSystem && window.authSystem.initializeGoogleAuth) {
+                    window.authSystem.initializeGoogleAuth();
+                }
+            }, 1000);
+        });
+
+        // Handle GitHub OAuth callback when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const hasGitHubCode = urlParams.get('code');
+            
+            if (hasGitHubCode) {
+                console.log('GitHub OAuth callback detected');
+                // The auth.js will handle this automatically
             }
         });
     </script>
