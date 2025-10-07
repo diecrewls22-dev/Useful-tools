@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Useful Tools Website</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="nav-logo">🛠️ Useful Tools</h1>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="morse-code.html" class="nav-link">Morse Code</a></li>
+                <li><a href="base64-decoder.html" class="nav-link">Base64 Decoder</a></li>
+                <li><a href="contact.html" class="nav-link active">Contact</a></li>
+                <li><a href="contributions.html" class="nav-link">Contributions</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="tool-container">
+            <h1 class="tool-title">📞 Contact Us</h1>
+            <p style="text-align: center; margin-bottom: 2rem; font-size: 1.1rem; color: #666;">
+                Get in touch with us through any of these platforms
+            </p>
+
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <div class="contact-icon">📷</div>
+                    <h3>Instagram</h3>
+                    <p>Follow us for updates and announcements</p>
+                    <div class="contact-handle">@diecrewls22</div>
+                    <a href="https://instagram.com/diecrewls22" target="_blank" class="btn contact-btn">
+                        Follow on Instagram
+                    </a>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon">💬</div>
+                    <h3>Discord</h3>
+                    <p>Join our community for discussions and support</p>
+                    <div class="contact-handle">@diecrewls22_vortex</div>
+                    <button class="btn contact-btn" onclick="copyDiscord()">
+                        Copy Discord Handle
+                    </button>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon">📧</div>
+                    <h3>Email</h3>
+                    <p>Send us direct messages and feedback</p>
+                    <div class="contact-handle">diecrewls22@gmail.com</div>
+                    <a href="mailto:diecrewls22@gmail.com" class="btn contact-btn">
+                        Send Email
+                    </a>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon">🔗</div>
+                    <h3>Reddit</h3>
+                    <p>Join our subreddit for discussions and updates</p>
+                    <div class="contact-handle">r/CrewStudios</div>
+                    <a href="https://www.reddit.com/r/CrewStudios/" target="_blank" class="btn contact-btn">
+                        Visit Subreddit
+                    </a>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h4>💡 Quick Support</h4>
+                <p>For technical issues with our tools, please include:</p>
+                <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                    <li>Tool you're having issues with</li>
+                    <li>Browser and device information</li>
+                    <li>Detailed description of the problem</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Chat Bot -->
+    <div id="chatToggle" class="chat-toggle" title="Chat with us">
+        <span>💬</span>
+    </div>
+
+    <div id="chatWidget" class="chat-widget hidden">
+        <div class="chat-header">
+            <span>🛠️ Useful Tools Assistant</span>
+            <button id="closeChat" class="close-btn">×</button>
+        </div>
+        <div id="chatbox" class="chatbox">
+            <div class="bot-msg">
+                Hello! I'm your Useful Tools assistant. I can help you with Morse code, Base64 decoding, contact info, and more! How can I help you today?
+            </div>
+        </div>
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Ask about our tools..." maxlength="500">
+            <button id="sendBtn" class="send-btn">Send</button>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+    <script>
+        function copyDiscord() {
+            navigator.clipboard.writeText('diecrewls22_vortex').then(() => {
+                alert('Discord handle copied to clipboard: diecrewls22_vortex');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                alert('Failed to copy Discord handle. Please copy manually: diecrewls22_vortex');
+            });
+        }
+
+        // Add contact-specific chat responses
+        const originalSendMessage = window.sendMessage;
+        window.sendMessage = function() {
+            const message = document.getElementById('userInput').value.trim().toLowerCase();
+            
+            // If user asks about contact in chat, provide quick response
+            if (message.includes('contact') || message.includes('email') || message.includes('discord') || message.includes('instagram')) {
+                const chatbox = document.getElementById('chatbox');
+                const typingIndicator = document.querySelector('.typing');
+                
+                if (typingIndicator) {
+                    chatbox.removeChild(typingIndicator);
+                }
+                
+                displayMessage("You can find all our contact information on the Contact page! Here's a quick overview:\n• Instagram: @diecrewls22\n• Discord: @diecrewls22_vortex\n• Email: diecrewls22@gmail.com\n• Reddit: r/CrewStudios", 'bot-msg');
+                document.getElementById('userInput').value = '';
+                return;
+            }
+            
+            originalSendMessage();
+        };
+    </script>
+
+    <style>
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .contact-card {
+            background: white;
+            padding: 2.5rem 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #007c91, #004d40);
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border-color: #007c91;
+        }
+
+        .contact-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .contact-card h3 {
+            color: #007c91;
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+        }
+
+        .contact-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .contact-handle {
+            background: linear-gradient(135deg, #007c91, #004d40);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            font-size: 1.1rem;
+        }
+
+        .contact-btn {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .contact-card {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</body>
+</html>
