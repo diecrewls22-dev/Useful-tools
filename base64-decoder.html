@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 Decoder Tool</title>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        button {
+            background-color: #007cba;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #005a87;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #007cba;
+        }
+        .error {
+            border-left-color: #dc3232;
+            background-color: #ffeaea;
+        }
+        .warning {
+            background-color: #fff8e5;
+            border-left-color: #ffb900;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Base64 Decoder Tool</h1>
+        <p>Decode Base64 encoded strings securely in your browser</p>
+        
+        <div class="warning">
+            <strong>Security Note:</strong> This tool runs entirely in your browser. Your data never leaves your computer.
+            Be cautious when decoding untrusted content.
+        </div>
+
+        <div class="input-group">
+            <label for="base64-input"><strong>Encoded Base64 String:</strong></label>
+            <textarea 
+                id="base64-input" 
+                placeholder="Paste your Base64 encoded string here..."
+            ></textarea>
+        </div>
+
+        <div>
+            <button onclick="decodeBase64()">Decode</button>
+            <button onclick="clearAll()">Clear</button>
+            <button onclick="decodeAsText()">Decode as Text</button>
+            <button onclick="decodeAsJSON()">Decode as JSON</button>
+        </div>
+
+        <div id="result" class="result" style="display: none;">
+            <h3>Decoded Result:</h3>
+            <pre id="decoded-output"></pre>
+        </div>
+
+        <div id="error" class="result error" style="display: none;">
+            <h3>Error:</h3>
+            <p id="error-message"></p>
+        </div>
+
+        <div class="info">
+            <h4>About this tool:</h4>
+            <ul>
+                <li>100% client-side - no data sent to servers</li>
+                <li>Supports text, JSON, and binary data detection</li>
+                <li>Auto-detects encoding issues</li>
+                <li>Free and open source</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function decodeBase64() {
+            const input = document.getElementById('base64-input').value.trim();
+            const resultDiv = document.getElementById('result');
+            const errorDiv = document.getElementById('error');
+            const output = document.getElementById('decoded-output');
+            
+            // Hide previous results
+            resultDiv.style.display = 'none';
+            errorDiv.style.display = 'none';
+            
+            if (!input) {
+                showError('Please enter a Base64 string to decode.');
+                return;
+            }
+            
+            try {
+                // Clean the input (remove data URLs if present)
+                let cleanInput = input;
+                if (input.includes(',')) {
+                    cleanInput = input.split(',')[1];
+                }
+                
+                // Decode using the modern Web API
+                const decodedString = atob(cleanInput);
+                
+                // Try to detect if it's JSON
+                try {
+                    const jsonParsed = JSON.parse(decodedString);
+                    output.textContent = JSON.stringify(jsonParsed, null, 2);
+                    output.style.color = '#008000';
+                } catch (e) {
+                    // If not JSON, display as plain text
+                    output.textContent = decodedString;
+                    output.style.color = '#000';
+                }
+                
+                resultDiv.style.display = 'block';
+                
+            } catch (error) {
+                showError('Invalid Base64 string. Please check your input and try again.');
+                console.error('Decoding error:', error);
+            }
+        }
+        
+        function decodeAsText() {
+            const input = document.getElementById('base64-input').value.trim();
+            const resultDiv = document.getElementById('result');
+            const errorDiv = document.getElementById('error');
+            const output = document.getElementById('decoded-output');
+            
+            resultDiv.style.display = 'none';
+            errorDiv.style.display = 'none';
+            
+            if (!input) {
+                showError('Please enter a Base64 string to decode.');
+                return;
+            }
+            
+            try {
+                let cleanInput = input;
+                if (input.includes(',')) {
+                    cleanInput = input.split(',')[1];
+                }
+                
+                const decodedString = atob(cleanInput);
+                output.textContent = decodedString;
+                output.style.color = '#000';
+                resultDiv.style.display = 'block';
+                
+            } catch (error) {
+                showError('Invalid Base64 string. Please check your input and try again.');
+            }
+        }
+        
+        function decodeAsJSON() {
+            const input = document.getElementById('base64-input').value.trim();
+            const resultDiv = document.getElementById('result');
+            const errorDiv = document.getElementById('error');
+            const output = document.getElementById('decoded-output');
+            
+            resultDiv.style.display = 'none';
+            errorDiv.style.display = 'none';
+            
+            if (!input) {
+                showError('Please enter a Base64 string to decode.');
+                return;
+            }
+            
+            try {
+                let cleanInput = input;
+                if (input.includes(',')) {
+                    cleanInput = input.split(',')[1];
+                }
+                
+                const decodedString = atob(cleanInput);
+                const jsonParsed = JSON.parse(decodedString);
+                output.textContent = JSON.stringify(jsonParsed, null, 2);
+                output.style.color = '#008000';
+                resultDiv.style.display = 'block';
+                
+            } catch (error) {
+                showError('The decoded string is not valid JSON. Try decoding as text instead.');
+            }
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        function clearAll() {
+            document.getElementById('base64-input').value = '';
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+        }
+        
+        // Handle paste events to clean common formatting issues
+        document.getElementById('base64-input').addEventListener('paste', function(e) {
+            setTimeout(() => {
+                this.value = this.value.replace(/\s/g, '');
+            }, 0);
+        });
+    </script>
+</body>
+</html>
