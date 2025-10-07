@@ -1,4 +1,4 @@
-// Complete JavaScript Chatbot - No external dependencies needed
+// Complete JavaScript Chatbot with Authentication Integration
 const chatbot = {
     // Chatbot knowledge base
     knowledge: {
@@ -35,6 +35,12 @@ const chatbot = {
             "Our website offers:\n• Morse Code tool\n• Base64 decoder\n• Contact resources\n• Contribution guidelines"
         ],
         
+        auth: [
+            "You can log in to access premium features and save your preferences!",
+            "Login to unlock exclusive tools and personalized experiences.",
+            "Create an account to save your work and access advanced features."
+        ],
+        
         fallback: [
             "I'm here to help you with our useful tools! You can ask me about Morse code, Base64 decoding, contact info, or how to contribute.",
             "I can help with:\n• Morse Code tools\n• Base64 decoding\n• Contact information\n• Contribution methods\nWhat would you like to know?",
@@ -50,10 +56,30 @@ const chatbot = {
     // Process user message and generate response
     processMessage: function(message) {
         const lowerMessage = message.toLowerCase().trim();
+        const user = window.authIntegration?.getCurrentUser();
         
         // Greetings
         if (lowerMessage.match(/\b(hello|hi|hey|greetings|howdy)\b/)) {
+            if (user) {
+                return `Hello ${user.name}! Welcome back to Useful Tools. How can I help you today?`;
+            }
             return this.getRandomResponse(this.knowledge.greetings);
+        }
+        
+        // Authentication related
+        if (lowerMessage.match(/\b(login|sign in|register|sign up|account|profile)\b/)) {
+            if (user) {
+                return `You're already logged in as ${user.name}! You can access premium features.`;
+            }
+            return this.getRandomResponse(this.knowledge.auth) + " Visit the login page to get started!";
+        }
+        
+        // Premium features
+        if (lowerMessage.match(/\b(premium|pro|advanced|exclusive)\b/)) {
+            if (user) {
+                return "You have access to premium features! Check out the Premium section on the homepage for advanced tools.";
+            }
+            return "Premium features are available for logged-in users! Please log in to access advanced encryption, data analytics, and enhanced AI tools.";
         }
         
         // Morse Code
@@ -78,12 +104,24 @@ const chatbot = {
         
         // Tools overview
         if (lowerMessage.match(/\b(tool|what can you do|help|features|what do you have)\b/)) {
-            return this.getRandomResponse(this.knowledge.tools);
+            const baseResponse = this.getRandomResponse(this.knowledge.tools);
+            if (user) {
+                return baseResponse + "\n\nAs a logged-in user, you also have access to premium features!";
+            }
+            return baseResponse;
         }
         
         // Thanks
         if (lowerMessage.match(/\b(thanks|thank you|appreciate|grateful)\b/)) {
             return "You're welcome! Let me know if you need help with any of our tools. 🛠️";
+        }
+        
+        // Logout
+        if (lowerMessage.match(/\b(logout|sign out|exit)\b/)) {
+            if (user) {
+                return "You can logout by clicking on your username in the navigation bar and selecting 'Logout'.";
+            }
+            return "You're not currently logged in. Would you like to log in to access premium features?";
         }
         
         // Fallback for unknown queries
@@ -233,7 +271,13 @@ const chatManager = {
 
     // Add a welcome message (optional)
     addWelcomeMessage: function() {
-        const welcomeMessage = "Hello! I'm your Useful Tools assistant. I can help you with Morse code, Base64 decoding, contact info, and more! How can I help you today?";
+        const user = window.authIntegration?.getCurrentUser();
+        let welcomeMessage = "Hello! I'm your Useful Tools assistant. I can help you with Morse code, Base64 decoding, contact info, and more!";
+        
+        if (user) {
+            welcomeMessage = `Welcome back, ${user.name}! I'm your Useful Tools assistant. You have access to premium features!`;
+        }
+        
         this.displayMessage(welcomeMessage, 'bot-msg');
     },
 
@@ -244,65 +288,179 @@ const chatManager = {
     }
 };
 
-// Enhanced chatbot with conversation memory
-const enhancedChatbot = {
-    ...chatbot,
-    
-    // Conversation history
-    conversationHistory: [],
-    
-    // Enhanced message processing with context
-    processMessage: function(message) {
-        const lowerMessage = message.toLowerCase().trim();
-        
-        // Add to conversation history (limit to last 10 messages)
-        this.conversationHistory.push({ user: message, timestamp: new Date() });
-        if (this.conversationHistory.length > 10) {
-            this.conversationHistory.shift();
-        }
-        
-        // Check for follow-up questions
-        const lastUserMessage = this.conversationHistory.length > 1 ? 
-            this.conversationHistory[this.conversationHistory.length - 2].user.toLowerCase() : '';
-        
-        // Handle follow-ups about contact methods
-        if (lastUserMessage.includes('contact') && lowerMessage.match(/\b(instagram|discord|email|reddit)\b/)) {
-            if (lowerMessage.includes('instagram')) {
-                return "Our Instagram is @diecrewls22 - we post updates and announcements there!";
-            }
-            if (lowerMessage.includes('discord')) {
-                return "You can find us on Discord as @diecrewls22_vortex - great for real-time discussions!";
-            }
-            if (lowerMessage.includes('email')) {
-                return "Send us an email at diecrewls22@gmail.com for direct communication!";
-            }
-            if (lowerMessage.includes('reddit')) {
-                return "Join our Reddit community at r/CrewStudios for discussions and updates!";
-            }
-        }
-        
-        // Use original processing for other messages
-        return chatbot.processMessage(message);
+// Authentication Integration
+class AuthIntegration {
+    constructor() {
+        this.authSystem = null;
+        this.init();
     }
-};
 
-// Initialize chatbot when DOM is loaded
+    init() {
+        // Wait for auth system to be available
+        if (window.authSystem) {
+            this.authSystem = window.authSystem;
+            this.updateUIBasedOnAuth();
+        } else {
+            // Retry after a short delay
+            setTimeout(() => this.init(), 100);
+        }
+    }
+
+    updateUIBasedOnAuth() {
+        const user = this.getCurrentUser();
+        const authElements = document.getElementById('authElements');
+        const premiumSection = document.getElementById('premiumSection');
+        
+        if (!authElements) return;
+
+        if (user) {
+            authElements.innerHTML = `
+                <div class="user-menu">
+                    <div class="user-welcome">👤 ${user.name}</div>
+                    <div class="user-dropdown">
+                        <a href="#" onclick="authIntegration.showProfile()">Profile</a>
+                        <a href="#" onclick="authIntegration.logout()">Logout</a>
+                    </div>
+                </div>
+            `;
+            
+            // Show premium section
+            if (premiumSection) {
+                premiumSection.style.display = 'block';
+            }
+        } else {
+            authElements.innerHTML = `
+                <a href="login.html" class="nav-link">Login</a>
+            `;
+            
+            // Hide premium section
+            if (premiumSection) {
+                premiumSection.style.display = 'none';
+            }
+        }
+    }
+
+    setupAuthEventListeners() {
+        // Listen for auth state changes
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'currentUser') {
+                this.updateUIBasedOnAuth();
+                // Refresh chatbot welcome message
+                if (window.chatManager) {
+                    window.chatManager.resetChat();
+                }
+            }
+        });
+    }
+
+    showProfile() {
+        const user = this.getCurrentUser();
+        if (user) {
+            alert(`User Profile:\nName: ${user.name}\nEmail: ${user.email}\nProvider: ${user.provider}\nMember since: ${new Date(user.createdAt).toLocaleDateString()}`);
+        }
+    }
+
+    logout() {
+        if (this.authSystem) {
+            this.authSystem.logout();
+        } else {
+            // Fallback logout
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+    }
+
+    getCurrentUser() {
+        if (this.authSystem) {
+            return this.authSystem.getCurrentUser();
+        }
+        // Fallback
+        const userData = localStorage.getItem('currentUser');
+        return userData ? JSON.parse(userData) : null;
+    }
+
+    isAuthenticated() {
+        return this.getCurrentUser() !== null;
+    }
+}
+
+// Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Replace the original chatbot with enhanced version
-    window.chatbot = enhancedChatbot;
+    // Initialize auth integration
+    window.authIntegration = new AuthIntegration();
     
     // Initialize chat manager
+    window.chatManager = chatManager;
     chatManager.init();
     
-    // Add welcome message
+    // Add welcome message after a short delay
     setTimeout(() => {
         chatManager.addWelcomeMessage();
     }, 500);
     
-    console.log("Useful Tools Chatbot loaded successfully!");
+    // Setup auth event listeners
+    window.authIntegration.setupAuthEventListeners();
+    
+    console.log("Useful Tools Website loaded successfully!");
 });
 
-// Export for use in other modules (if needed)
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { chatbot, chatManager };
+// Global function for premium buttons
+function handlePremiumFeature(feature) {
+    const user = window.authIntegration?.getCurrentUser();
+    if (user) {
+        alert(`Accessing ${feature}...\nWelcome ${user.name}! This premium feature is now available.`);
+    } else {
+        alert('Please log in to access premium features!');
+        window.location.href = 'login.html';
+    }
 }
+
+// Add click handlers for premium buttons
+document.addEventListener('DOMContentLoaded', function() {
+    // This will run after the page loads
+    setTimeout(() => {
+        const premiumButtons = document.querySelectorAll('.premium-btn');
+        premiumButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const feature = this.closest('.tool-card').querySelector('h3').textContent;
+                handlePremiumFeature(feature);
+            });
+        });
+    }, 1000);
+});
+
+// CSS for premium cards
+const premiumStyles = `
+    .premium-card {
+        border: 2px solid #ffd700;
+        background: linear-gradient(135deg, #fff9e6, #fff3cc);
+    }
+    
+    .premium-card h3 {
+        color: #b8860b;
+    }
+    
+    .premium-btn {
+        background: linear-gradient(135deg, #ffd700, #ffed4e);
+        color: #8b6914;
+    }
+    
+    .premium-btn:hover {
+        background: linear-gradient(135deg, #ffed4e, #ffd700);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+    }
+    
+    .premium-section {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-top: 3rem;
+    }
+`;
+
+// Add premium styles to the page
+const styleSheet = document.createElement('style');
+styleSheet.textContent = premiumStyles;
+document.head.appendChild(styleSheet);
