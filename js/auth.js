@@ -1,20 +1,25 @@
-// Authentication System with Real Google Login
+// Authentication System with Real Google Login - FIXED
 class AuthSystem {
     constructor() {
         this.users = JSON.parse(localStorage.getItem('usefulToolsUsers')) || [];
         this.currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
         this.googleClientId = '514391141546-309eb9f00kqkmq2mh9d6djmrgp28j800.apps.googleusercontent.com';
+        this.redirectCheckCompleted = false; // Add this flag
         this.init();
     }
 
     init() {
         this.setupEventListeners();
-        this.checkExistingSession();
-        this.loadGoogleScript();
+        // Don't auto-check session on init to prevent redirect loops
+        console.log('Auth system initialized');
     }
 
     loadGoogleScript() {
-        // Load Google Identity Services script
+        // Only load Google script if we're on login page
+        if (!window.location.pathname.includes('login.html')) {
+            return;
+        }
+
         const script = document.createElement('script');
         script.src = 'https://accounts.google.com/gsi/client';
         script.async = true;
@@ -27,34 +32,40 @@ class AuthSystem {
     }
 
     setupEventListeners() {
-        // Login form
-        document.getElementById('loginForm')?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.handleLogin();
-        });
+        // Only setup form listeners if we're on login page
+        if (window.location.pathname.includes('login.html')) {
+            document.getElementById('loginForm')?.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleLogin();
+            });
 
-        // Register form
-        document.getElementById('registerForm')?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.handleRegister();
-        });
+            document.getElementById('registerForm')?.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleRegister();
+            });
 
-        // Forgot password form
-        document.getElementById('forgotForm')?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.handleForgotPassword();
-        });
+            document.getElementById('forgotForm')?.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleForgotPassword();
+            });
+        }
     }
 
-    checkExistingSession() {
-        if (this.currentUser) {
-            this.redirectToDashboard();
+    // Safe session check that won't cause redirect loops
+    checkSession() {
+        if (this.redirectCheckCompleted) {
+            return this.currentUser;
         }
+        
+        this.redirectCheckCompleted = true;
+        return this.currentUser;
     }
 
     showMessage(message, type = 'error') {
         const errorElement = document.getElementById('errorMessage');
         const successElement = document.getElementById('successMessage');
+        
+        if (!errorElement || !successElement) return;
         
         if (type === 'error') {
             errorElement.textContent = message;
@@ -67,8 +78,8 @@ class AuthSystem {
         }
 
         setTimeout(() => {
-            errorElement.style.display = 'none';
-            successElement.style.display = 'none';
+            if (errorElement) errorElement.style.display = 'none';
+            if (successElement) successElement.style.display = 'none';
         }, 5000);
     }
 
@@ -105,9 +116,6 @@ class AuthSystem {
                     button.setAttribute('data-google-initialized', 'true');
                 }
             });
-
-            // Also initialize for login prompts
-            google.accounts.id.prompt();
 
         } catch (error) {
             console.error('Error initializing Google Auth:', error);
@@ -298,7 +306,10 @@ class AuthSystem {
     }
 
     redirectToDashboard() {
-        window.location.href = 'index.html';
+        // Only redirect if we're on login page
+        if (window.location.pathname.includes('login.html')) {
+            window.location.href = 'index.html';
+        }
     }
 
     logout() {
@@ -336,21 +347,25 @@ class AuthSystem {
 const authSystem = new AuthSystem();
 window.authSystem = authSystem;
 
-// Initialize Google Auth when DOM is ready
+// Safe initialization that won't cause redirect loops
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, initializing authentication...');
+    console.log('DOM loaded, safe initialization...');
     
-    // Check if user is already logged in and redirect if on login page
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    if (currentUser && window.location.pathname.includes('login.html')) {
-        window.location.href = 'index.html';
-        return;
-    }
-    
-    // Initialize Google Auth with delay to ensure script is loaded
-    setTimeout(() => {
-        if (window.authSystem) {
-            window.authSystem.initializeGoogleAuth();
+    // Only load Google auth if we're on login page
+    if (window.location.pathname.includes('login.html')) {
+        // Check if user is already logged in
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (currentUser) {
+            console.log('User already logged in, redirecting to main page');
+            window.location.href = 'index.html';
+            return;
         }
-    }, 1000);
+        
+        // Load Google auth for login page
+        setTimeout(() => {
+            if (window.authSystem) {
+                window.authSystem.loadGoogleScript();
+            }
+        }, 500);
+    }
 });
