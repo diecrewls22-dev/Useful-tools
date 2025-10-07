@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morse Code Encoder/Decoder</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #1a2a6c, #b21f1f);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 25px;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1a2a6c;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            border-color: #1a2a6c;
+            outline: none;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        #encodeBtn {
+            background-color: #1a2a6c;
+            color: white;
+        }
+        
+        #encodeBtn:hover {
+            background-color: #0d1a4a;
+            transform: translateY(-2px);
+        }
+        
+        #decodeBtn {
+            background-color: #b21f1f;
+            color: white;
+        }
+        
+        #decodeBtn:hover {
+            background-color: #8a1818;
+            transform: translateY(-2px);
+        }
+        
+        #clearBtn {
+            background-color: #fdbb2d;
+            color: #333;
+        }
+        
+        #clearBtn:hover {
+            background-color: #e6a824;
+            transform: translateY(-2px);
+        }
+        
+        .result-container {
+            margin-top: 20px;
+        }
+        
+        .result-box {
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 120px;
+            word-wrap: break-word;
+        }
+        
+        .morse-reference {
+            margin-top: 30px;
+            background-color: #f0f2f5;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .morse-reference h3 {
+            color: #1a2a6c;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .reference-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+        }
+        
+        .reference-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .char {
+            font-weight: bold;
+        }
+        
+        .code {
+            color: #b21f1f;
+            font-family: monospace;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #f0f2f5;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 600px) {
+            .buttons {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Morse Code Encoder/Decoder</h1>
+            <p class="subtitle">Convert text to Morse code and vice versa</p>
+        </header>
+        
+        <div class="content">
+            <div class="input-group">
+                <label for="inputText">Enter text or Morse code:</label>
+                <textarea id="inputText" placeholder="Type your message here..."></textarea>
+            </div>
+            
+            <div class="buttons">
+                <button id="encodeBtn">Encode to Morse</button>
+                <button id="decodeBtn">Decode from Morse</button>
+                <button id="clearBtn">Clear</button>
+            </div>
+            
+            <div class="result-container">
+                <label for="result">Result:</label>
+                <div id="result" class="result-box"></div>
+            </div>
+            
+            <div class="morse-reference">
+                <h3>Morse Code Reference</h3>
+                <div class="reference-grid" id="referenceGrid">
+                    <!-- Morse code reference will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Morse Code Encoder/Decoder | Compatible with Google Sites</p>
+        </footer>
+    </div>
+
+    <script>
+        // Morse code dictionary
+        const morseCode = {
+            'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.', 
+            'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..', 
+            'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.', 
+            'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-', 
+            'Y': '-.--', 'Z': '--..', 
+            '0': '-----', '1': '.----', '2': '..---', '3': '...--', '4': '....-', 
+            '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.', 
+            '.': '.-.-.-', ',': '--..--', '?': '..--..', "'": '.----.', '!': '-.-.--', 
+            '/': '-..-.', '(': '-.--.', ')': '-.--.-', '&': '.-...', ':': '---...', 
+            ';': '-.-.-.', '=': '-...-', '+': '.-.-.', '-': '-....-', '_': '..--.-', 
+            '"': '.-..-.', '$': '...-..-', '@': '.--.-.', ' ': '/'
+        };
+
+        // Reverse the dictionary for decoding
+        const reverseMorse = {};
+        for (const [key, value] of Object.entries(morseCode)) {
+            reverseMorse[value] = key;
+        }
+
+        // DOM elements
+        const inputText = document.getElementById('inputText');
+        const resultDiv = document.getElementById('result');
+        const encodeBtn = document.getElementById('encodeBtn');
+        const decodeBtn = document.getElementById('decodeBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const referenceGrid = document.getElementById('referenceGrid');
+
+        // Populate the reference grid
+        function populateReference() {
+            for (const [char, code] of Object.entries(morseCode)) {
+                const item = document.createElement('div');
+                item.className = 'reference-item';
+                item.innerHTML = `<span class="char">${char === ' ' ? 'Space' : char}</span><span class="code">${code}</span>`;
+                referenceGrid.appendChild(item);
+            }
+        }
+
+        // Encode text to Morse code
+        function encodeToMorse() {
+            const text = inputText.value.toUpperCase();
+            let morse = '';
+            
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                if (morseCode[char]) {
+                    morse += morseCode[char] + ' ';
+                } else if (char === ' ') {
+                    morse += '/ ';
+                } else {
+                    morse += '? ';
+                }
+            }
+            
+            resultDiv.textContent = morse.trim();
+        }
+
+        // Decode Morse code to text
+        function decodeFromMorse() {
+            const morse = inputText.value.trim();
+            const morseWords = morse.split(' / ');
+            let text = '';
+            
+            for (let i = 0; i < morseWords.length; i++) {
+                const morseChars = morseWords[i].split(' ');
+                
+                for (let j = 0; j < morseChars.length; j++) {
+                    const code = morseChars[j];
+                    if (reverseMorse[code]) {
+                        text += reverseMorse[code];
+                    } else if (code === '') {
+                        // Skip empty codes (extra spaces)
+                        continue;
+                    } else {
+                        text += '?';
+                    }
+                }
+                
+                if (i < morseWords.length - 1) {
+                    text += ' ';
+                }
+            }
+            
+            resultDiv.textContent = text;
+        }
+
+        // Clear input and result
+        function clearAll() {
+            inputText.value = '';
+            resultDiv.textContent = '';
+        }
+
+        // Event listeners
+        encodeBtn.addEventListener('click', encodeToMorse);
+        decodeBtn.addEventListener('click', decodeFromMorse);
+        clearBtn.addEventListener('click', clearAll);
+
+        // Initialize the reference grid
+        populateReference();
+    </script>
+</body>
+</html>
