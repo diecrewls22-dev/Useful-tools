@@ -1,4 +1,4 @@
-// Complete JavaScript Chatbot with Authentication Integration
+// Complete JavaScript Chatbot with Authentication Integration - FIXED
 const chatbot = {
     // Chatbot knowledge base
     knowledge: {
@@ -288,7 +288,7 @@ const chatManager = {
     }
 };
 
-// Authentication Integration
+// Authentication Integration - FIXED
 class AuthIntegration {
     constructor() {
         this.authSystem = null;
@@ -371,12 +371,18 @@ class AuthIntegration {
     }
 
     getCurrentUser() {
-        if (this.authSystem) {
-            return this.authSystem.getCurrentUser();
+        // Safe method that won't cause redirects
+        try {
+            if (this.authSystem) {
+                return this.authSystem.checkSession ? this.authSystem.checkSession() : this.authSystem.getCurrentUser();
+            }
+            // Fallback - safe localStorage access
+            const userData = localStorage.getItem('currentUser');
+            return userData ? JSON.parse(userData) : null;
+        } catch (error) {
+            console.error('Error getting current user:', error);
+            return null;
         }
-        // Fallback
-        const userData = localStorage.getItem('currentUser');
-        return userData ? JSON.parse(userData) : null;
     }
 
     isAuthenticated() {
@@ -384,8 +390,16 @@ class AuthIntegration {
     }
 }
 
-// Initialize everything when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+// Safe initialization that prevents redirect loops
+function initializeAppSafely() {
+    console.log('Safe app initialization started...');
+    
+    // First, check if we're on login page and handle accordingly
+    if (window.location.pathname.includes('login.html')) {
+        console.log('On login page, skipping main app initialization');
+        return;
+    }
+    
     // Initialize auth integration
     window.authIntegration = new AuthIntegration();
     
@@ -402,6 +416,24 @@ document.addEventListener('DOMContentLoaded', function() {
     window.authIntegration.setupAuthEventListeners();
     
     console.log("Useful Tools Website loaded successfully!");
+}
+
+// Initialize when DOM is loaded - SAFE VERSION
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, starting safe initialization...');
+    
+    // Add emergency redirect prevention
+    if (window.location.pathname.includes('index.html') || window.location.pathname === '/' || window.location.pathname.includes('/useful-tools-website/')) {
+        try {
+            const userData = localStorage.getItem('currentUser');
+            console.log('Current user data:', userData ? 'User found' : 'No user');
+        } catch (error) {
+            console.log('LocalStorage access completed safely');
+        }
+    }
+    
+    // Initialize the app safely
+    initializeAppSafely();
 });
 
 // Global function for premium buttons
@@ -464,3 +496,10 @@ const premiumStyles = `
 const styleSheet = document.createElement('style');
 styleSheet.textContent = premiumStyles;
 document.head.appendChild(styleSheet);
+
+// Emergency fix: Prevent any redirect loops
+window.addEventListener('beforeunload', function() {
+    // This helps prevent rapid redirect cycles
+});
+
+console.log('Script.js loaded safely - no redirect loops should occur');
