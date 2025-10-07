@@ -1,14 +1,29 @@
-// Authentication System - Frontend Simulation
+// Authentication System with Real Google Login
 class AuthSystem {
     constructor() {
         this.users = JSON.parse(localStorage.getItem('usefulToolsUsers')) || [];
         this.currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+        this.googleClientId = '514391141546-309eb9f00kqkmq2mh9d6djmrgp28j800.apps.googleusercontent.com';
         this.init();
     }
 
     init() {
         this.setupEventListeners();
         this.checkExistingSession();
+        this.loadGoogleScript();
+    }
+
+    loadGoogleScript() {
+        // Load Google Identity Services script
+        const script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.defer = true;
+        script.onload = () => {
+            console.log('Google Identity Services loaded');
+            this.initializeGoogleAuth();
+        };
+        document.head.appendChild(script);
     }
 
     setupEventListeners() {
@@ -57,6 +72,81 @@ class AuthSystem {
         }, 5000);
     }
 
+    // REAL Google Login Implementation
+    initializeGoogleAuth() {
+        if (typeof google === 'undefined') {
+            console.log('Google script not loaded yet, retrying...');
+            setTimeout(() => this.initializeGoogleAuth(), 500);
+            return;
+        }
+
+        console.log('Initializing Google Auth with client ID:', this.googleClientId);
+        
+        try {
+            google.accounts.id.initialize({
+                client_id: this.googleClientId,
+                callback: this.handleGoogleResponse.bind(this),
+                auto_select: false,
+                cancel_on_tap_outside: true,
+                context: 'signin'
+            });
+
+            // Render Google Sign In button
+            const googleButtons = document.querySelectorAll('.google-auth-button');
+            googleButtons.forEach(button => {
+                if (button && !button.hasAttribute('data-google-initialized')) {
+                    google.accounts.id.renderButton(button, {
+                        theme: 'outline',
+                        size: 'large',
+                        width: button.offsetWidth,
+                        text: 'continue_with',
+                        shape: 'rectangular'
+                    });
+                    button.setAttribute('data-google-initialized', 'true');
+                }
+            });
+
+            // Also initialize for login prompts
+            google.accounts.id.prompt();
+
+        } catch (error) {
+            console.error('Error initializing Google Auth:', error);
+        }
+    }
+
+    handleGoogleResponse(response) {
+        console.log('Google authentication response received');
+        
+        try {
+            // Decode the JWT token to get user info
+            const responsePayload = JSON.parse(atob(response.credential.split('.')[1]));
+            console.log('Google user info:', responsePayload);
+            
+            const user = {
+                id: responsePayload.sub,
+                name: responsePayload.name,
+                email: responsePayload.email,
+                picture: responsePayload.picture,
+                provider: 'google',
+                createdAt: new Date().toISOString(),
+                emailVerified: responsePayload.email_verified,
+                givenName: responsePayload.given_name,
+                familyName: responsePayload.family_name
+            };
+
+            // Save user to local storage
+            this.saveUser(user);
+            this.showMessage('🎉 Google authentication successful! Welcome ' + user.name, 'success');
+            
+            setTimeout(() => this.redirectToDashboard(), 1500);
+
+        } catch (error) {
+            console.error('Error processing Google response:', error);
+            this.showMessage('Error during Google authentication. Please try again.');
+        }
+    }
+
+    // Traditional email/password login
     handleLogin() {
         const email = document.getElementById('loginEmail').value;
         const password = document.getElementById('loginPassword').value;
@@ -137,37 +227,41 @@ class AuthSystem {
         setTimeout(() => showTab('login'), 3000);
     }
 
-    // Social Auth Simulations
-    async signInWithGoogle() {
-        this.showMessage('Redirecting to Google...', 'success');
-        await this.simulateSocialAuth('Google');
+    // Social Auth Functions
+    signInWithGoogle() {
+        // Trigger Google One Tap or manually show prompt
+        if (typeof google !== 'undefined') {
+            google.accounts.id.prompt();
+        } else {
+            this.showMessage('Google sign-in is loading...');
+        }
     }
 
-    async signUpWithGoogle() {
-        this.showMessage('Redirecting to Google...', 'success');
-        await this.simulateSocialAuth('Google');
+    signUpWithGoogle() {
+        // Same as sign in for Google
+        this.signInWithGoogle();
     }
 
+    // Microsoft and GitHub simulations
     async signInWithMicrosoft() {
-        this.showMessage('Redirecting to Microsoft...', 'success');
+        this.showMessage('🔗 Microsoft login coming soon! Using simulation for now.', 'success');
         await this.simulateSocialAuth('Microsoft');
     }
 
     async signUpWithMicrosoft() {
-        this.showMessage('Redirecting to Microsoft...', 'success');
+        this.showMessage('🔗 Microsoft registration coming soon! Using simulation for now.', 'success');
         await this.simulateSocialAuth('Microsoft');
     }
 
     async signInWithGitHub() {
-        this.showMessage('Redirecting to GitHub...', 'success');
+        this.showMessage('🐙 GitHub login coming soon! Using simulation for now.', 'success');
         await this.simulateSocialAuth('GitHub');
     }
 
     async simulateSocialAuth(provider) {
-        // Simulate OAuth flow delay
+        this.showMessage(`🔐 Connecting to ${provider}...`, 'success');
         await new Promise(resolve => setTimeout(resolve, 2000));
 
-        // Create or find user
         const socialEmail = `user-${this.generateId()}@${provider.toLowerCase()}.com`;
         let user = this.users.find(u => u.email === socialEmail);
 
@@ -183,11 +277,20 @@ class AuthSystem {
             localStorage.setItem('usefulToolsUsers', JSON.stringify(this.users));
         }
 
+        this.saveUser(user);
+        this.showMessage(`✅ ${provider} authentication successful!`, 'success');
+        setTimeout(() => this.redirectToDashboard(), 1500);
+    }
+
+    saveUser(user) {
         this.currentUser = user;
         localStorage.setItem('currentUser', JSON.stringify(user));
         
-        this.showMessage(`${provider} authentication successful!`, 'success');
-        setTimeout(() => this.redirectToDashboard(), 1500);
+        // Also save to users list if not already there
+        if (!this.users.find(u => u.id === user.id)) {
+            this.users.push(user);
+            localStorage.setItem('usefulToolsUsers', JSON.stringify(this.users));
+        }
     }
 
     generateId() {
@@ -199,6 +302,14 @@ class AuthSystem {
     }
 
     logout() {
+        // If user logged in with Google, also sign out from Google
+        if (this.currentUser?.provider === 'google' && typeof google !== 'undefined') {
+            google.accounts.id.disableAutoSelect();
+            google.accounts.id.revoke(this.currentUser.email, () => {
+                console.log('Google session revoked');
+            });
+        }
+        
         this.currentUser = null;
         localStorage.removeItem('currentUser');
         window.location.href = 'login.html';
@@ -211,67 +322,35 @@ class AuthSystem {
     isAuthenticated() {
         return this.currentUser !== null;
     }
-}
 
-// Global functions for HTML event handlers
-function showTab(tabName) {
-    // Hide all forms
-    document.querySelectorAll('.auth-form').forEach(form => {
-        form.classList.remove('active');
-    });
-    
-    // Show selected form
-    document.getElementById(tabName + 'Form').classList.add('active');
-    
-    // Update tabs
-    document.querySelectorAll('.auth-tab').forEach(tab => {
-        tab.classList.remove('active');
-    });
-    event.target.classList.add('active');
-    
-    // Clear messages
-    document.getElementById('errorMessage').style.display = 'none';
-    document.getElementById('successMessage').style.display = 'none';
-}
-
-function togglePassword(inputId) {
-    const input = document.getElementById(inputId);
-    const toggle = input.parentNode.querySelector('.password-toggle');
-    
-    if (input.type === 'password') {
-        input.type = 'text';
-        toggle.textContent = '🔒';
-    } else {
-        input.type = 'password';
-        toggle.textContent = '👁️';
+    // Method to check if user has Google profile picture
+    getUserProfilePicture() {
+        if (this.currentUser?.picture) {
+            return this.currentUser.picture;
+        }
+        return null;
     }
-}
-
-// Social auth functions (called from HTML)
-function signInWithGoogle() {
-    authSystem.signInWithGoogle();
-}
-
-function signUpWithGoogle() {
-    authSystem.signUpWithGoogle();
-}
-
-function signInWithMicrosoft() {
-    authSystem.signInWithMicrosoft();
-}
-
-function signUpWithMicrosoft() {
-    authSystem.signUpWithMicrosoft();
-}
-
-function signInWithGitHub() {
-    authSystem.signInWithGitHub();
 }
 
 // Initialize auth system
 const authSystem = new AuthSystem();
+window.authSystem = authSystem;
 
-// Export for use in other files
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { AuthSystem, authSystem };
-}
+// Initialize Google Auth when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing authentication...');
+    
+    // Check if user is already logged in and redirect if on login page
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (currentUser && window.location.pathname.includes('login.html')) {
+        window.location.href = 'index.html';
+        return;
+    }
+    
+    // Initialize Google Auth with delay to ensure script is loaded
+    setTimeout(() => {
+        if (window.authSystem) {
+            window.authSystem.initializeGoogleAuth();
+        }
+    }, 1000);
+});
