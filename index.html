@@ -5,6 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Useful Tools Website</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .user-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            z-index: 1000;
+            margin-top: 10px;
+        }
+
+        .user-dropdown a {
+            display: block;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .user-dropdown a:hover {
+            background: #f8f9fa;
+        }
+
+        .user-dropdown a:last-child {
+            border-bottom: none;
+        }
+
+        .user-menu:hover .user-dropdown {
+            display: block;
+        }
+
+        .user-welcome {
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #007c91, #004d40);
+            color: white;
+            font-weight: 500;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -16,6 +64,10 @@
                 <li><a href="base64-decoder.html" class="nav-link">Base64 Decoder</a></li>
                 <li><a href="contact.html" class="nav-link">Contact</a></li>
                 <li><a href="contributions.html" class="nav-link">Contributions</a></li>
+                <li id="authElements">
+                    <!-- Auth elements will be inserted here by JavaScript -->
+                    <a href="login.html" class="nav-link">Login</a>
+                </li>
             </ul>
         </div>
     </nav>
@@ -51,6 +103,33 @@
                 <a href="contributions.html" class="btn">Contribute</a>
             </div>
         </section>
+
+        <!-- Premium Features Section (visible when logged in) -->
+        <section id="premiumSection" class="premium-section" style="display: none; margin-top: 4rem;">
+            <div class="tool-container">
+                <h2 class="tool-title">🌟 Premium Features</h2>
+                <p style="text-align: center; margin-bottom: 2rem; color: #666;">
+                    Exclusive tools available for logged-in users
+                </p>
+                <div class="tools-grid">
+                    <div class="tool-card premium-card">
+                        <h3>🔒 Advanced Encryption</h3>
+                        <p>Military-grade encryption tools for secure communications.</p>
+                        <button class="btn premium-btn">Access Tool</button>
+                    </div>
+                    <div class="tool-card premium-card">
+                        <h3>📊 Data Analytics</h3>
+                        <p>Advanced data analysis and visualization tools.</p>
+                        <button class="btn premium-btn">Access Tool</button>
+                    </div>
+                    <div class="tool-card premium-card">
+                        <h3>🤖 AI Assistant</h3>
+                        <p>Enhanced AI chatbot with advanced capabilities.</p>
+                        <button class="btn premium-btn">Access Tool</button>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Floating Chat Bot -->
@@ -74,6 +153,8 @@
         </div>
     </div>
 
+    <!-- Include auth.js first -->
+    <script src="js/auth.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>
